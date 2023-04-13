@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:io';
+import 'package:cognitive_app/image_download.dart';
 import 'package:flutter/material.dart';
 
 class LevelBuilder extends StatefulWidget {
@@ -14,6 +16,7 @@ class LevelBuilder extends StatefulWidget {
 
 class _LevelBuilderState extends State<LevelBuilder> {
   Map<String, dynamic>? _wordOnScreen;
+  List<String?> paths = [];
   String _info = "";
   bool _isPlaying = false;
   bool _isTyping = false;
@@ -23,7 +26,19 @@ class _LevelBuilderState extends State<LevelBuilder> {
 
   final TextEditingController _wordInputController = TextEditingController();
 
+  Future downloadAllImages() async {
+    for (var word in widget.words) {
+      var path = await ImageDownload.downloadImg(word["img"]);
+      paths.add(path);
+    }
+
+    setState(() {});
+  }
+
   void _cycleThroughWords() async {
+    // Get images
+    await downloadAllImages();
+
     setState(() {
       _btnText = "Next";
       _score = 0;
@@ -37,10 +52,13 @@ class _LevelBuilderState extends State<LevelBuilder> {
     });
 
     // Words appearing on screen with a delay
-    for (var word in widget.words) {
+    for (int cntr = 0; cntr < widget.words.length; cntr++) {
       await Future.delayed(const Duration(milliseconds: 3000), () {
         setState(() {
-          _wordOnScreen = word;
+          _wordOnScreen = {
+            "word": widget.words[cntr]["word"],
+            "img": paths[cntr]
+          };
         });
       });
     }
@@ -81,7 +99,7 @@ class _LevelBuilderState extends State<LevelBuilder> {
 
   @override
   void initState() {
-    // cycleThroughWords();
+    // _cycleThroughWords();
     super.initState();
   }
 
@@ -106,37 +124,32 @@ class _LevelBuilderState extends State<LevelBuilder> {
           ),
           !_isPlaying
               ? Center(
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  _isPlaying = true;
-                });
-                _cycleThroughWords();
-              },
-              style: ButtonStyle(
-                padding: MaterialStateProperty.all(
-                    const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 15)),
-              ),
-              child: const Text(
-                "Start",
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.white,
-                ),
-              ),
-            ),
-          )
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        _isPlaying = true;
+                      });
+                      _cycleThroughWords();
+                    },
+                    style: ButtonStyle(
+                      padding: MaterialStateProperty.all(
+                          const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 15)),
+                    ),
+                    child: const Text(
+                      "Start",
+                      style: TextStyle(
+                        fontSize: 30,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                )
               : const SizedBox(),
           _isPlaying && !_isTyping && _wordOnScreen != null
               ? Center(
-            // child: Text(
-            //   _wordOnScreen,
-            //   style: const TextStyle(
-            //       fontWeight: FontWeight.bold, fontSize: 35),
-            // ),
-            child: Image.network(_wordOnScreen!["img"], height: 200,)
-          )
+                  child: Image.file(File(_wordOnScreen!["img"])),
+                )
               : const SizedBox(),
           Center(
             child: Column(
@@ -144,50 +157,50 @@ class _LevelBuilderState extends State<LevelBuilder> {
               children: [
                 _isPlaying
                     ? Center(
-                  child: Text(
-                    _info,
-                    textAlign: TextAlign.center,
-                    style: const TextStyle(fontSize: 18),
-                  ),
-                )
+                        child: Text(
+                          _info,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 18),
+                        ),
+                      )
                     : const SizedBox(),
                 _isTyping
                     ? Center(
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 30, vertical: 10),
-                    child: TextField(
-                      controller: _wordInputController,
-                      decoration: InputDecoration(
-                        border: OutlineInputBorder(
-                          borderSide: const BorderSide(),
-                          borderRadius: BorderRadius.circular(12.0),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 30, vertical: 10),
+                          child: TextField(
+                            controller: _wordInputController,
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(),
+                                borderRadius: BorderRadius.circular(12.0),
+                              ),
+                            ),
+                            textAlign: TextAlign.center,
+                            style: const TextStyle(fontSize: 20),
+                          ),
                         ),
-                      ),
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(fontSize: 20),
-                    ),
-                  ),
-                )
+                      )
                     : const SizedBox(),
                 _isTyping
                     ? ElevatedButton(
-                  onPressed: () {
-                    _nextWordCompleter!.complete();
-                  },
-                  style: ButtonStyle(
-                    padding: MaterialStateProperty.all(
-                        const EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 10)),
-                  ),
-                  child: Text(
-                    _btnText,
-                    style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
-                    ),
-                  ),
-                )
+                        onPressed: () {
+                          _nextWordCompleter!.complete();
+                        },
+                        style: ButtonStyle(
+                          padding: MaterialStateProperty.all(
+                              const EdgeInsets.symmetric(
+                                  horizontal: 30, vertical: 10)),
+                        ),
+                        child: Text(
+                          _btnText,
+                          style: const TextStyle(
+                            fontSize: 20,
+                            color: Colors.white,
+                          ),
+                        ),
+                      )
                     : const SizedBox(),
               ],
             ),

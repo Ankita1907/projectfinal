@@ -1,6 +1,7 @@
 import 'package:cognitive_app/age_select.dart';
 import 'package:cognitive_app/user/Demo.dart';
 import 'package:cognitive_app/user/Settings/settings.dart';
+import 'package:cognitive_app/video_player_screen.dart';
 //import 'package:cognitive_app/user/log_out.dart';
 import 'package:flutter/material.dart';
 
@@ -30,43 +31,42 @@ class _DashboardState extends State<Dashboard> {
           title: Text("Main Menu"),
         ),
         body: Center(
-
             child: Column(children: <Widget>[
           Container(
-
             width: MediaQuery.of(context).size.width / 2,
             color: Colors.deepPurpleAccent,
             margin: EdgeInsets.all(50),
-            child: FlatButton(
-              child: Text(
+            child: TextButton(
+              child: const Text(
                 'Demo',
-                style: TextStyle(fontSize: 30.0),
+                style: TextStyle(
+                  fontSize: 30.0,
+                  color: Colors.white,
+                ),
               ),
-              //color: Colors.blueAccent,
-              textColor: Colors.white,
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => Demo(),
+                    builder: (context) => const VideoPlayerScreen(),
                   ),
                 );
               },
             ),
           ),
           Container(
-
             width: MediaQuery.of(context).size.width / 2,
             color: Colors.deepPurpleAccent,
-            margin: const EdgeInsets.symmetric(
-                horizontal: 30, vertical: 10),
-            child: FlatButton(
-              child: Text(
+            margin: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
+            child: TextButton(
+              child: const Text(
                 'Play',
-                style: TextStyle(fontSize: 30.0),
+                style: TextStyle(
+                  fontSize: 30.0,
+                  color: Colors.white,
+                ),
               ),
               //color: Colors.blueAccent,
-              textColor: Colors.white,
               onPressed: () {
                 Navigator.push(
                   context,

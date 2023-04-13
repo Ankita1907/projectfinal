@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cognitive_app/level_builder.dart';
-import 'package:cognitive_app/user/Settings/level1.dart';
-import 'package:cognitive_app/user/Settings/level2.dart';
-import 'package:cognitive_app/user/Settings/level3.dart';
 import 'package:flutter/material.dart';
 
 class Settings extends StatefulWidget {
